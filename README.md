@@ -1,28 +1,42 @@
-# 🏠 Corre que a Mãe Tá Vindo!
+# 🏠 Corre que a Mãe Tá Vindo! — v1.0
 
-Jogo web 2D feito em HTML5, CSS3 e JavaScript puro.
+Jogo web 2D em HTML5, CSS3 e JavaScript puro, sem backend.
 
-## Como jogar
+## História
+Três dias. Três rodadas de tarefas. Uma mãe ficando cada vez menos paciente.
+
+1. **Dia 1 — Arrumando a Casa:** introdução mais tolerante a movimento, ferramentas, tarefas, corrida e paciência.
+2. **Dia 2 — Hora do Almoço:** cozinha, tarefas em etapas, eventos, barulho e investigação.
+3. **Dia 3 — A Mãe Tá Brava:** pressão maior, perseguição, imprevistos e o grande final.
+
+## Controles
 - **WASD / Setas:** movimentar
-- **E (segure):** realizar a tarefa quando estiver perto do objeto
-- Complete todas as tarefas antes do tempo acabar e antes que a paciência da mãe chegue ao limite.
+- **SHIFT:** correr
+- **E:** interagir / segurar para executar tarefas
+- **Q:** largar item
+- **ESC:** pausar
 
-## Fases
-1. **Arrumando a Casa** — varrer a sala, limpar o banheiro e guardar objetos.
-2. **Hora do Almoço** — ingredientes, comida, louça e área.
-3. **A Mãe Tá Brava** — quintal, lixo, organização, cozinha e tarefa surpresa.
-
-## Executar
-Abra `index.html` em um navegador moderno. Não precisa de servidor ou backend.
+## v1.0
+- abertura curta e pulável
+- menu com seleção de dias, conquistas, estatísticas, ajuda, configurações e créditos
+- progressão Dia 1 → Dia 2 → Dia 3
+- balanceamento revisado
+- diretor de eventos com proteção contra sobreposição crítica
+- feedback de ferramentas e orientação contextual
+- save com migração dos dados anteriores
+- confirmação antes de apagar progresso
+- opção de reduzir tremor
+- áudio procedural com fallback seguro e música ambiente simples
+- final normal e Final Perfeito preservados
 
 ## GitHub Pages
-Em **Settings → Pages**, escolha **Deploy from a branch**, branch **main** e pasta **/(root)**. Depois salve.
+O projeto continua totalmente estático e usa caminhos relativos. A publicação esperada é:
 
-O projeto não depende de bibliotecas externas e está pronto para hospedagem estática.
+https://omaninja2-oss.github.io/NambuGames1/
 
 ## Estrutura
-- `index.html` — telas e HUD
-- `style.css` — visual e responsividade
-- `game.js` — movimentação, colisões, tarefas, fases, IA da mãe, perseguição, cronômetro e estados do jogo
+- `index.html` — telas, menus e HUD
+- `style.css` — arte da interface, animações e responsividade
+- `game.js` — gameplay, IA, eventos, save, áudio e progressão
 
-Os gráficos atuais são desenhados com Canvas e elementos temporários, facilitando a troca futura por sprites e efeitos profissionais.
+Não há dependências externas obrigatórias.
