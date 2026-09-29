@@ -72,7 +72,6 @@ else if(event.type==="blackout"){if(K.e&&dist(pl,event)<60){blackout=0;$("#black
 else if(event.type==="momphone"&&event.t<=0){momPhone=0;event=null}
 else if(event.type==="falsealarm"&&event.t<=0)event=null
 else if(event.type==="water"&&event.t<=0)event=null}
-}
 function countUpdate(dt){if(!count)return;callT-=dt;if(callT<=0){if(count===1){count=2;say("DOIS...",1.2)}else if(count===2){count=3;say("DOIS E MEIO...",1.1)}else{count=0;say("TRÊS!",1.3);pat=Math.max(0,pat-7)}}}
 function startCount(){count=1;say("UM...",1.1)}
 function nearList(list,rad=48){let b=null,d=rad;for(const o of list){if(o.done||picked.has(o.id)||usedHelp.has(o.id))continue;let q=dist(pl,o);if(q<d){b=o;d=q}}return b}
