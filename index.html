@@ -1,63 +1,9 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Corre que a Mãe Tá Vindo!</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <main id="app">
-    <section id="menu" class="screen active">
-      <div class="card hero">
-        <div class="emoji">🏠🧹😱</div>
-        <h1>CORRE QUE A MÃE TÁ VINDO!</h1>
-        <p>Termine as tarefas antes que a paciência da mãe acabe.</p>
-        <button id="playBtn">JOGAR</button>
-        <div class="controls"><b>WASD / Setas</b> — Andar &nbsp; • &nbsp; <b>E</b> — Interagir</div>
-      </div>
-    </section>
-
-    <section id="game" class="screen">
-      <header class="hud">
-        <div><strong id="phaseLabel">FASE 1</strong><span id="phaseName"></span></div>
-        <div class="time">⏱️ TEMPO: <b id="time">02:00</b></div>
-        <div class="patience"><span>PACIÊNCIA DA MÃE</span><b id="patienceState">🟢 Tranquila</b><div class="meter"><i id="patienceBar"></i></div></div>
-      </header>
-      <div class="game-layout">
-        <aside class="missions">
-          <h2>MISSÕES</h2>
-          <ul id="missionList"></ul>
-          <div class="task-count">TAREFAS: <b id="taskCount">0/3</b></div>
-          <div class="meter tasks"><i id="taskBar"></i></div>
-        </aside>
-        <div class="canvas-wrap">
-          <canvas id="canvas" width="960" height="600"></canvas>
-          <div id="interaction" class="interaction"></div>
-          <div id="progressBox" class="progress-box"><span id="progressText">Fazendo...</span><div class="meter"><i id="progressBar"></i></div></div>
-          <div id="alert" class="alert">ELA TÁ VINDO!</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="phaseComplete" class="screen"><div class="card">
-      <div class="emoji">🎉🧹✨</div><h1>BOA!</h1>
-      <p>VOCÊ TERMINOU ANTES DA SUA MÃE CHEGAR!</p>
-      <button id="nextBtn">PRÓXIMA FASE</button>
-    </div></section>
-
-    <section id="gameOver" class="screen"><div class="card">
-      <div class="emoji">😤👩</div><h1>GAME OVER</h1>
-      <p id="scoldText" class="scold"></p>
-      <div class="buttons"><button id="retryBtn">TENTAR NOVAMENTE</button><button id="menuBtn" class="secondary">VOLTAR AO MENU</button></div>
-    </div></section>
-
-    <section id="victory" class="screen"><div class="card">
-      <div class="emoji">🏆😂🏠</div><h1>VOCÊ SOBREVIVEU ÀS TAREFAS DE CASA! 😂</h1>
-      <p>Tempo total: <b id="totalTime"></b></p><p>Tarefas realizadas: <b id="totalTasks"></b></p>
-      <button id="victoryMenuBtn">JOGAR DE NOVO</button>
-    </div></section>
-  </main>
-  <script src="game.js"></script>
-</body>
-</html>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Corre que a Mãe Tá Vindo!</title><link rel="stylesheet" href="style.css"></head><body><main id="app">
+<section id="menu" class="screen active"><div class="card hero"><div class="logo-art">🏠 <span>🧹</span> 😱</div><div class="eyebrow">UMA AVENTURA 100% BRASILEIRA</div><h1>CORRE QUE A MÃE<br>TÁ VINDO!</h1><p>Faça as tarefas. Não enrole. E, principalmente, não deixe ela chegar no <b>TRÊS!</b></p><button id="playBtn">▶ JOGAR</button><div class="controls"><b>WASD / Setas</b> — Andar <span>•</span> <b>Segure E</b> — Fazer tarefa</div></div></section>
+<section id="game" class="screen"><header class="hud"><div class="phase"><small>🏠 AGORA</small><strong id="phaseLabel">FASE 1</strong><span id="phaseName"></span></div><div id="timeBox" class="time"><small>⏱ TEMPO</small><b id="time">02:00</b></div><div id="patienceBox" class="patience"><small>❤️ PACIÊNCIA DA MÃE</small><b id="patienceState">🟢 TRANQUILA</b><div class="meter"><i id="patienceBar"></i></div></div></header>
+<div class="game-layout"><aside class="missions"><h2>📋 TAREFAS DA MÃE</h2><ul id="missionList"></ul><div class="task-count">PROGRESSO <b id="taskCount">0/3</b></div><div class="meter tasks"><i id="taskBar"></i></div><div class="tip">Chegue perto do objeto e <b>segure E</b>.</div></aside>
+<div id="canvasWrap" class="canvas-wrap"><canvas id="canvas" width="960" height="600"></canvas><div id="interaction" class="interaction"></div><div id="progressBox" class="progress-box"><span id="progressText">Fazendo...</span><div class="meter"><i id="progressBar"></i></div></div><div id="taskToast" class="toast">✓ TAREFA CONCLUÍDA!</div><div id="alert" class="alert">⚠ ELA TÁ VINDO! ⚠</div></div></div></section>
+<section id="phaseComplete" class="screen"><div class="card result"><div class="logo-art">😅✨</div><div class="eyebrow">UFA! TERMINEI!</div><h1>FASE CONCLUÍDA</h1><div class="stats"><div>⏱<small>Tempo restante</small><b id="resultTime">00:00</b></div><div>🧹<small>Tarefas</small><b id="resultTasks">0/0</b></div><div>❤️<small>Paciência</small><b id="resultPatience">0%</b></div></div><button id="nextBtn">PRÓXIMA FASE →</button></div></section>
+<section id="gameOver" class="screen"><div class="card danger"><div class="logo-art">😤👩</div><h1>GAME OVER</h1><p id="scoldText" class="scold"></p><div class="buttons"><button id="retryBtn">↻ TENTAR NOVAMENTE</button><button id="menuBtn" class="secondary">VOLTAR AO MENU</button></div></div></section>
+<section id="victory" class="screen"><div class="card result"><div class="logo-art">🏆😂🏠</div><h1>VOCÊ SOBREVIVEU ÀS TAREFAS DE CASA!</h1><div class="stats"><div>⏱<small>Tempo total</small><b id="totalTime"></b></div><div>✅<small>Tarefas realizadas</small><b id="totalTasks"></b></div></div><button id="victoryMenuBtn">JOGAR DE NOVO</button></div></section>
+</main><script src="game.js"></script></body></html>
