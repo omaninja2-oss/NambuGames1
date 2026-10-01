@@ -33,7 +33,7 @@ jobs:
       - name: Run Chromium gameplay input regression
         run: |
           python3 -m http.server 8765 >/tmp/server.log 2>&1 &
-          chromium --headless --no-sandbox --disable-gpu --remote-debugging-port=9222 http://127.0.0.1:8765/browser-test.html >/tmp/chrome.out 2>/tmp/chrome.err &
+          chromium --headless --no-sandbox --disable-gpu --user-data-dir=/tmp/chrome-test --remote-debugging-address=127.0.0.1 --remote-debugging-port=9222 --remote-allow-origins=* http://127.0.0.1:8765/browser-test.html >/tmp/chrome.out 2>/tmp/chrome.err &
           CHROME_PID=$!
           sleep 3
           node <<'NODE'
