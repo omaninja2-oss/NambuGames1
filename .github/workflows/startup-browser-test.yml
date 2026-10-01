@@ -7,50 +7,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build browser harness
+      - name: Build browser scenarios
         shell: python
         run: |
           from pathlib import Path
-          p=Path("index.html")
-          s=p.read_text()
-          harness=r'''<script>
-          (async()=>{
-            const out=[], err=[];
-            const log=(m)=>{out.push(m);console.log("[BROWSER-TEST]",m)};
-            window.addEventListener("error",e=>err.push((e.error&&e.error.stack)||e.message));
-            window.addEventListener("unhandledrejection",e=>err.push(String(e.reason)));
-            const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-            const click=id=>{const e=document.getElementById(id);if(!e)throw new Error("missing #"+id);e.click()};
-            try{
-              await sleep(150);
-              click("opening"); await sleep(50);
-              click("playBtn"); log("playBtn");
-              await sleep(50); click("introBtn"); log("introBtn");
-              await sleep(50);
-              if(document.getElementById("tutorial").classList.contains("active")){click("tutorialBtn");log("tutorialBtn")}
-              await sleep(250);
-              const game=document.getElementById("game"), canvas=document.getElementById("canvas");
-              log("gameActive="+game.classList.contains("active"));
-              log("timer="+document.getElementById("time").textContent);
-              const before=canvas.toDataURL();
-              window.dispatchEvent(new KeyboardEvent("keydown",{key:"d",bubbles:true}));
-              await sleep(350);
-              window.dispatchEvent(new KeyboardEvent("keyup",{key:"d",bubbles:true}));
-              await sleep(80);
-              const moved=before!==canvas.toDataURL();
-              log("canvasChangedAfterD="+moved);
-              document.body.setAttribute("data-test",game.classList.contains("active")&&moved&&!err.length?"PASS":"FAIL");
-            }catch(e){err.push(e.stack||String(e));document.body.setAttribute("data-test","FAIL")}
-            const pre=document.createElement("pre");pre.id="browserTestResult";pre.textContent=JSON.stringify({out,err},null,2);document.body.appendChild(pre);
-          })();
-          </script>'''
-          s=s.replace("</body>",harness+"</body>")
-          Path("startup-test.html").write_text(s)
-      - name: Run Chromium startup flow
+          base=Path("index.html").read_text()
+          harness=r'''<script>(async()=>{const out=[],err=[];window.addEventListener("error",e=>err.push((e.error&&e.error.stack)||e.message));window.addEventListener("unhandledrejection",e=>err.push(String(e.reason)));const sleep=ms=>new Promise(r=>setTimeout(r,ms)),click=id=>{const e=document.getElementById(id);if(!e)throw new Error("missing #"+id);e.click()};try{await sleep(100);click("opening");await sleep(30);click("playBtn");out.push("playBtn");await sleep(30);click("introBtn");out.push("introBtn");await sleep(30);if(document.getElementById("tutorial").classList.contains("active")){click("tutorialBtn");out.push("tutorialBtn")}await sleep(180);const game=document.getElementById("game"),canvas=document.getElementById("canvas");out.push("gameActive="+game.classList.contains("active"));out.push("timer="+document.getElementById("time").textContent);const before=canvas.toDataURL();window.dispatchEvent(new KeyboardEvent("keydown",{key:"d",bubbles:true}));await sleep(280);window.dispatchEvent(new KeyboardEvent("keyup",{key:"d",bubbles:true}));await sleep(50);out.push("canvasChangedAfterD="+(before!==canvas.toDataURL()));}catch(e){err.push(e.stack||String(e))}const pass=out.includes("gameActive=true")&&out.includes("canvasChangedAfterD=true")&&!err.length;document.body.dataset.test=pass?"PASS":"FAIL";const pre=document.createElement("pre");pre.id="browserTestResult";pre.textContent=JSON.stringify({out,err},null,2);document.body.appendChild(pre)})();</script>'''
+          scenarios={
+            "clean":None,
+            "tutorial":'{"version":"1.0","tutorial":true,"unlocked":1,"stars":[0,0,0],"achievements":[]}',
+            "legacy":'{"tutorial":true,"unlocked":3,"stars":[3,2],"music":true,"sfx":true,"volume":0.7,"plays":17,"tasksDone":41,"bestScore":2200}'
+          }
+          for name,save in scenarios.items():
+            s=base
+            if save is not None:
+              inject="<script>localStorage.setItem('cqmtvSave',"+repr(save)+");</script>"
+              s=s.replace('<script src="game.js',inject+'<script src="game.js')
+            s=s.replace("</body>",harness+"</body>")
+            Path("startup-"+name+".html").write_text(s)
+      - name: Run Chromium startup scenarios
         run: |
           python3 -m http.server 8765 >/tmp/server.log 2>&1 &
           sleep 1
-          timeout 20s chromium --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=3000 --dump-dom http://127.0.0.1:8765/startup-test.html > /tmp/dom.txt 2>/tmp/chrome.err || true
-          cat /tmp/chrome.err
-          grep -A30 'browserTestResult' /tmp/dom.txt || true
-          grep -q 'data-test="PASS"' /tmp/dom.txt
+          for scenario in clean tutorial legacy; do
+            for n in 1 2 3 4 5; do
+              timeout 20s chromium --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=2500 --dump-dom "http://127.0.0.1:8765/startup-$scenario.html?run=$n" > "/tmp/$scenario-$n.txt" 2>/dev/null || true
+              echo "SCENARIO=$scenario RUN=$n"
+              grep -A20 'browserTestResult' "/tmp/$scenario-$n.txt" || true
+              grep -q 'data-test="PASS"' "/tmp/$scenario-$n.txt"
+            done
+          done
+      - name: Verify published Pages asset
+        run: |
+          expected='game.js?v=start-debug-fix-2-20260930'
+          for n in $(seq 1 12); do
+            body="$(curl -fsSL "https://omaninja2-oss.github.io/NambuGames1/?cb=$GITHUB_SHA" || true)"
+            if echo "$body" | grep -q "$expected"; then echo "PAGES_ASSET_OK=$expected"; exit 0; fi
+            echo "Waiting for Pages deployment ($n/12)"
+            sleep 10
+          done
+          echo "Published Pages did not expose expected asset version"
+          exit 1
