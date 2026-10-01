@@ -1,0 +1,56 @@
+name: Startup browser regression
+on:
+  push:
+    branches: [main]
+jobs:
+  startup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build browser harness
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path("index.html")
+          s=p.read_text()
+          harness=r'''<script>
+          (async()=>{
+            const out=[], err=[];
+            const log=(m)=>{out.push(m);console.log("[BROWSER-TEST]",m)};
+            window.addEventListener("error",e=>err.push((e.error&&e.error.stack)||e.message));
+            window.addEventListener("unhandledrejection",e=>err.push(String(e.reason)));
+            const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+            const click=id=>{const e=document.getElementById(id);if(!e)throw new Error("missing #"+id);e.click()};
+            try{
+              await sleep(150);
+              click("opening"); await sleep(50);
+              click("playBtn"); log("playBtn");
+              await sleep(50); click("introBtn"); log("introBtn");
+              await sleep(50);
+              if(document.getElementById("tutorial").classList.contains("active")){click("tutorialBtn");log("tutorialBtn")}
+              await sleep(250);
+              const game=document.getElementById("game"), canvas=document.getElementById("canvas");
+              log("gameActive="+game.classList.contains("active"));
+              log("timer="+document.getElementById("time").textContent);
+              const before=canvas.toDataURL();
+              window.dispatchEvent(new KeyboardEvent("keydown",{key:"d",bubbles:true}));
+              await sleep(350);
+              window.dispatchEvent(new KeyboardEvent("keyup",{key:"d",bubbles:true}));
+              await sleep(80);
+              const moved=before!==canvas.toDataURL();
+              log("canvasChangedAfterD="+moved);
+              document.body.setAttribute("data-test",game.classList.contains("active")&&moved&&!err.length?"PASS":"FAIL");
+            }catch(e){err.push(e.stack||String(e));document.body.setAttribute("data-test","FAIL")}
+            const pre=document.createElement("pre");pre.id="browserTestResult";pre.textContent=JSON.stringify({out,err},null,2);document.body.appendChild(pre);
+          })();
+          </script>'''
+          s=s.replace("</body>",harness+"</body>")
+          Path("startup-test.html").write_text(s)
+      - name: Run Chromium startup flow
+        run: |
+          python3 -m http.server 8765 >/tmp/server.log 2>&1 &
+          sleep 1
+          chromium --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=3000 --dump-dom http://127.0.0.1:8765/startup-test.html > /tmp/dom.txt 2>/tmp/chrome.err || true
+          cat /tmp/chrome.err
+          grep -A30 'browserTestResult' /tmp/dom.txt || true
+          grep -q 'data-test="PASS"' /tmp/dom.txt
