@@ -7,3 +7,8 @@
 
 /* v1.0 polish */
 .opening-card{margin:auto;text-align:center;animation:openingPulse 1.2s ease-in-out infinite alternate}.opening-card p{font-size:clamp(20px,3vw,34px);color:#cbd7e8}.opening-card h1{font-size:clamp(42px,8vw,92px);margin:18px;text-shadow:5px 5px #b51f3d}.opening-card small{color:#ffe27b;font-weight:900}.version{margin-top:12px;font-size:12px;opacity:.75}.panel-list{display:grid;gap:9px;margin:20px auto;max-width:560px;text-align:left}.panel-row{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:#10233b99}.panel-row.locked{opacity:.55;filter:grayscale(1)}.danger-btn{background:#d73b4f;color:#fff;box-shadow:0 5px 0 #7e1728;margin:12px}.objective-arrow{position:absolute;z-index:7;pointer-events:none;background:#152846e8;border:2px solid #ffe27b;border-radius:12px;padding:7px 10px;color:#ffe27b;font-size:11px;font-weight:900;left:50%;top:95px;transform:translateX(-50%)}body.reduce-shake .shake,body.reduce-shake .canvas-wrap.shake{animation:none!important}.kid-emotion{font-size:18px}.screen#opening{background:#05080f}.screen#opening.active{display:flex}.phase-buttons button strong{display:block;font-size:18px}.phase-buttons button small{display:block;margin-top:5px}.menu-actions button{min-width:150px}@keyframes openingPulse{to{transform:scale(1.025)}}@media(max-width:700px){.card{padding:25px 16px}.menu-actions button{min-width:130px;font-size:13px}.panel-row{font-size:13px}}
+
+/* Energy feedback — difficulty update */
+#energyBar.energy-low{animation:energyPulse .8s ease-in-out infinite}
+#energyBar.energy-critical{animation:energyPulse .42s ease-in-out infinite;filter:brightness(1.25)}
+@keyframes energyPulse{50%{opacity:.48;transform:scaleY(.82)}}
