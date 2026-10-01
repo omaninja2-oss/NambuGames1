@@ -15,7 +15,7 @@ jobs:
           g=g.replace("menuData();requestAnimationFrame(loop);","menuData();")
           g=g.rsplit("})();",1)[0]+'window.__TEST__={step:dt=>update(dt),pos:()=>({x:pl.x,y:pl.y}),touch:()=>({...touchInput}),keys:()=>({...K}),state:()=>state};})();'
           Path("game-test.js").write_text(g)
-          h=Path("index.html").read_text().replace("game.js?v=mobile-touch-20261001","game-test.js")
+          h=Path("index.html").read_text().replace('<script src="game.js?v=mobile-touch-20261001"></script>','<script>window.setInterval=()=>0;window.AudioContext=undefined;window.webkitAudioContext=undefined;</script><script src="game-test.js"></script>')
           test=r'''<script>(async()=>{const out=[],err=[];window.addEventListener("error",e=>err.push((e.error&&e.error.stack)||e.message));const sleep=ms=>new Promise(r=>setTimeout(r,ms)),click=id=>{let e=document.getElementById(id);e.focus();e.click()};try{
             await sleep(80);click("opening");await sleep(20);click("playBtn");await sleep(20);click("introBtn");await sleep(20);if(document.getElementById("tutorial").classList.contains("active"))click("tutorialBtn");await sleep(60);
             out.push("start="+(__TEST__.state()==="playing"));
@@ -33,22 +33,7 @@ jobs:
       - name: Run Chromium gameplay input regression
         run: |
           python3 -m http.server 8765 >/tmp/server.log 2>&1 &
-          CHROME=$(command -v google-chrome || command -v chromium || command -v chrome)\n          "$CHROME" --headless=new --no-sandbox --disable-gpu --user-data-dir=/tmp/chrome-test --remote-debugging-address=127.0.0.1 --remote-debugging-port=9222 --remote-allow-origins=* http://127.0.0.1:8765/browser-test.html >/tmp/chrome.out 2>/tmp/chrome.err &
-          CHROME_PID=$!
-          sleep 3
-          node <<'NODE'
-          const http=require('http');
-          const get=u=>new Promise((res,rej)=>http.get(u,r=>{let d='';r.on('data',c=>d+=c);r.on('end',()=>res(d))}).on('error',rej));
-          (async()=>{
-            let raw;for(let i=0;i<10;i++){try{raw=await get('http://127.0.0.1:9222/json');break}catch(e){await new Promise(r=>setTimeout(r,500))}}if(!raw)throw Error('DevTools unavailable');const pages=JSON.parse(raw);
-            const p=pages.find(x=>x.url.includes('browser-test.html')); if(!p) throw Error('test page not found');
-            const ws=new WebSocket(p.webSocketDebuggerUrl); await new Promise((r,j)=>{ws.onopen=r;ws.onerror=j});
-            let id=1; const evalJS=expr=>new Promise((r,j)=>{const n=id++;const on=e=>{let m=JSON.parse(e.data);if(m.id===n){ws.removeEventListener('message',on);r(m)}};ws.addEventListener('message',on);ws.send(JSON.stringify({id:n,method:'Runtime.evaluate',params:{expression:expr,returnByValue:true}}))});
-            await new Promise(r=>setTimeout(r,1200));
-            const a=await evalJS('document.getElementById("result")?.textContent||"NO RESULT"');
-            const b=await evalJS('document.body.dataset.test||"NO STATUS"');
-            console.log(a.result.result.value); console.log('STATUS='+b.result.result.value);
-            ws.close(); if(b.result.result.value!=='PASS')process.exit(1);
-          })().catch(e=>{console.error(e);process.exit(1)});
-          NODE
-          kill $CHROME_PID || true
+          sleep 1
+          timeout 15s chromium --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --dump-dom http://127.0.0.1:8765/browser-test.html >/tmp/dom.txt 2>/tmp/chrome.err || true
+          grep -A30 '<pre id="result">' /tmp/dom.txt || true
+          grep -q 'data-test="PASS"' /tmp/dom.txt
