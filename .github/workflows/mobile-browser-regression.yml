@@ -12,6 +12,7 @@ jobs:
         run: |
           from pathlib import Path
           g=Path("game.js").read_text()
+          g=g.replace("menuData();requestAnimationFrame(loop);","menuData();")
           g=g.rsplit("})();",1)[0]+'window.__TEST__={step:dt=>update(dt),pos:()=>({x:pl.x,y:pl.y}),touch:()=>({...touchInput}),keys:()=>({...K}),state:()=>state};})();'
           Path("game-test.js").write_text(g)
           h=Path("index.html").read_text().replace("game.js?v=mobile-touch-20261001","game-test.js")
