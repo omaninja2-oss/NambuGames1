@@ -50,7 +50,7 @@ jobs:
         run: |
           python3 -m http.server 8765 >/tmp/server.log 2>&1 &
           sleep 1
-          chromium --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=3000 --dump-dom http://127.0.0.1:8765/startup-test.html > /tmp/dom.txt 2>/tmp/chrome.err || true
+          timeout 20s chromium --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=3000 --dump-dom http://127.0.0.1:8765/startup-test.html > /tmp/dom.txt 2>/tmp/chrome.err || true
           cat /tmp/chrome.err
           grep -A30 'browserTestResult' /tmp/dom.txt || true
           grep -q 'data-test="PASS"' /tmp/dom.txt
