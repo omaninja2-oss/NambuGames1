@@ -12,3 +12,8 @@
 #energyBar.energy-low{animation:energyPulse .8s ease-in-out infinite}
 #energyBar.energy-critical{animation:energyPulse .42s ease-in-out infinite;filter:brightness(1.25)}
 @keyframes energyPulse{50%{opacity:.48;transform:scaleY(.82)}}
+
+/* Final chase / overtime */
+#timeBox.final-time{animation:finalTimePulse .48s ease-in-out infinite}
+.canvas-wrap.final-chase{box-shadow:0 0 0 2px rgba(229,45,79,.65),0 0 28px rgba(229,45,79,.22)}
+@keyframes finalTimePulse{50%{transform:scale(1.035);filter:brightness(1.3)}}
