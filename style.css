@@ -66,3 +66,47 @@
   body.touch-capable .rotate-phone span{font-size:15px;max-width:300px}
 }
 @keyframes phoneTurn{to{transform:rotate(90deg)}}
+
+
+/* Full viewport gameplay — visual scaling only, world remains 960x600 */
+#game.active{width:100vw;width:100dvw;height:100vh;height:100dvh;min-height:0;max-width:none;max-height:none;margin:0;overflow:hidden;flex-direction:column}
+#game.active .hud{flex:0 0 82px}
+#game.active .game-layout{flex:1 1 auto;min-height:0;height:calc(100vh - 82px);height:calc(100dvh - 82px);display:grid;grid-template-columns:clamp(190px,20vw,300px) minmax(0,1fr);width:100%;overflow:hidden}
+#game.active .missions{width:auto;min-width:0;height:100%;overflow:auto}
+#game.active .canvas-wrap{width:100%;height:100%;min-width:0;min-height:0;padding:4px}
+#game.active canvas{display:block;width:min(100%,calc((100vh - 90px) * 1.6));width:min(100%,calc((100dvh - 90px) * 1.6));height:auto;max-width:none;max-height:100%;aspect-ratio:8/5;object-fit:contain}
+
+@media (min-width:901px){
+ #game.active .missions{padding:clamp(10px,1.2vw,18px)}
+ #game.active .missions h2{font-size:clamp(14px,1.1vw,18px)}
+ #game.active .missions li{font-size:clamp(11px,.9vw,14px)}
+}
+
+@media (max-width:900px) and (orientation:landscape){
+ body.touch-capable #game.active{width:100vw;width:100dvw;height:100vh;height:100dvh;min-height:0}
+ body.touch-capable #game.active .hud{flex:0 0 50px;height:50px;grid-template-columns:.68fr .92fr 1.15fr;padding:3px max(118px,calc(env(safe-area-inset-right) + 112px)) 3px max(8px,env(safe-area-inset-left));gap:5px}
+ body.touch-capable #game.active .hud .phase,body.touch-capable #game.active #scoreBox{display:none}
+ body.touch-capable #game.active .hud small{font-size:7px}
+ body.touch-capable #game.active .time b{font-size:16px}
+ body.touch-capable #game.active .patience b{font-size:10px}
+ body.touch-capable #game.active #itemHud{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ body.touch-capable #game.active .meter{height:8px}
+ body.touch-capable #game.active .game-layout{display:block;width:100%;height:calc(100vh - 50px);height:calc(100dvh - 50px);min-height:0;overflow:hidden}
+ body.touch-capable #game.active .canvas-wrap{position:relative;width:100%;height:100%;padding:0;overflow:hidden}
+ body.touch-capable #game.active canvas{width:min(100vw,calc((100vh - 50px) * 1.6));width:min(100dvw,calc((100dvh - 50px) * 1.6));height:auto;max-width:100%;max-height:100%;border-width:2px;border-radius:8px}
+ body.touch-capable .mobile-objective{top:max(3px,env(safe-area-inset-top));max-width:44%;min-width:190px;padding:3px 6px}
+ body.touch-capable .mobile-objective span{font-size:7px}
+ body.touch-capable .mobile-objective b{font-size:9px}
+ body.touch-capable #mobileMissionsBtn{min-width:38px;width:38px;height:38px;font-size:16px}
+ body.touch-capable .joystick-base{left:max(12px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));width:clamp(104px,15vw,126px);height:clamp(104px,15vw,126px)}
+ body.touch-capable .joystick-stick{width:48px;height:48px;margin:-24px}
+ body.touch-capable .touch-actions{right:max(12px,env(safe-area-inset-right));bottom:max(9px,env(safe-area-inset-bottom));width:158px;height:132px}
+ body.touch-capable .touch-interact{width:clamp(70px,10vw,78px);height:clamp(70px,10vw,78px);bottom:24px}
+ body.touch-capable .touch-run{right:82px;bottom:49px;width:clamp(55px,8vw,62px);height:clamp(55px,8vw,62px)}
+ body.touch-capable .touch-drop{right:86px;bottom:0;width:clamp(50px,7vw,56px);height:clamp(50px,7vw,56px)}
+ body.touch-capable .touch-pause{right:max(8px,env(safe-area-inset-right));top:max(5px,env(safe-area-inset-top));width:42px;height:42px;font-size:18px}
+ body.touch-capable .touch-fullscreen{right:max(54px,calc(env(safe-area-inset-right) + 46px));top:max(5px,env(safe-area-inset-top));width:42px;height:42px;font-size:18px}
+ body.touch-capable .interaction{bottom:max(94px,calc(env(safe-area-inset-bottom) + 88px));font-size:10px}
+ body.touch-capable .progress-box{bottom:max(94px,calc(env(safe-area-inset-bottom) + 88px))}
+ body.touch-capable .missions{top:52px;max-height:calc(100dvh - 58px)}
+}
